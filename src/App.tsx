@@ -1,5 +1,6 @@
+import { supabase } from './supabaseClient';
 import { useState, useEffect } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence } from 'motion/react';
 import { User, AuthView, ToastInfo } from './types';
 import {
   getCurrentSession,
@@ -60,19 +61,32 @@ export default function App() {
     }, 350);
   };
 
-  const handleRegister = (name: string, email: string, pass: string) => {
+  // ★ Supabase 연동 회원가입 함수
+  const handleRegister = async (name: string, email: string, pass: string) => {
     setLoading(true);
-    setTimeout(() => {
+
+    // 1. Supabase 데이터베이스에 회원가입 요청
+    const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: pass,
+      options: {
+        data: { name: name }, // 사용자 이름도 함께 저장
+      },
+    });
+
+    setLoading(false);
+
+    if (error) {
+      addToast('error', `가입 실패: ${error.message}`);
+    } else {
+      // 2. 성공 시 기존 앱 내 화면 전환 및 세션 처리
       const res = registerUser(name, email, pass);
-      setLoading(false);
       if (res.success && res.user) {
         setCurrentSession(res.user);
         setUser(res.user);
-        addToast('success', '회원가입이 성공적으로 완료되었습니다!');
-      } else {
-        addToast('error', res.message);
+        addToast('success', 'Supabase 회원가입이 성공적으로 완료되었습니다!');
       }
-    }, 350);
+    }
   };
 
   const handleResetPassword = (email: string, newPass: string) => {
