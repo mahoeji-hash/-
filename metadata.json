@@ -1,0 +1,6 @@
+{
+  "name": "간편 로그인 & 회원가입",
+  "description": "간단하고 직관적인 회원가입, 로그인 및 개인 대시보드 애플리케이션",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
