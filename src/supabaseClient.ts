@@ -1,25 +1,18 @@
 import { createClient } from '@supabase/supabase-js';
 
-// 브라우저에서 process.env 접근 시 에러가 발생하지 않도록 안전하게 환경변수를 읽어옵니다.
-const getEnv = (key: string) => {
-  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[key]) {
-    return import.meta.env[key];
-  }
-  if (typeof process !== 'undefined' && process.env && process.env[key]) {
-    return process.env[key];
-  }
-  return '';
-};
+// Vite 및 Next.js 환경변수 읽기
+const env = import.meta.env || {};
 
 const supabaseUrl = 
-  getEnv('NEXT_PUBLIC_SUPABASE_URL') || 
-  getEnv('VITE_SUPABASE_URL') || 
+  env.VITE_SUPABASE_URL || 
+  env.NEXT_PUBLIC_SUPABASE_URL || 
   'https://bjeqocoxyilliqzaktlep.supabase.co';
 
+// 키 값이 비어있을 경우 화면 전체가 멈추는 현상을 방지하기 위한 임시 키 설정
 const supabaseAnonKey = 
-  getEnv('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY') || 
-  getEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY') || 
-  getEnv('VITE_SUPABASE_ANON_KEY') || 
-  '';
+  env.VITE_SUPABASE_ANON_KEY || 
+  env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 
+  env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || 
+  'sb_publishable_placeholder_key';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
